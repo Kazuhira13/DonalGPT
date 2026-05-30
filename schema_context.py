@@ -1,21 +1,48 @@
 SCHEMA_CONTEXT = """
 BASE DE DATOS: DonaldV2
 
-IMPORTANTE:
-- El nombre correcto de la tabla de órdenes es OrdeDeTrabajo.
-- Usar sintaxis SQL Server.
+REGLA CRÍTICA:
+- Nunca inventar tablas.
+- Nunca inventar columnas.
+- Nunca inventar relaciones.
+- Usar únicamente el esquema real de DonaldV2.
+- Si la pregunta no puede responderse con las tablas y columnas existentes, responder exactamente: NO_SQL.
+- Nunca generar INSERT, UPDATE, DELETE, DROP, CREATE, ALTER ni TRUNCATE.
 - Solo generar consultas SELECT.
-- No inventar tablas ni columnas.
 
 IMPORTANTE SOBRE DocumentoFiscal:
 - DocumentoFiscal tiene millones de registros.
-- Para consultas de ventas, facturación o ingresos, siempre usar filtros por fecha cuando el usuario mencione año, mes, trimestre o rango.
+- Para consultas de ventas, facturación o ingresos, usar filtros por fecha cuando el usuario mencione año, mes o rango.
 - Evitar SELECT * FROM DocumentoFiscal.
-- Para listados de ventas o documentos fiscales usar TOP 100 como máximo.
-- Para consultas de totales usar SUM(ValorTotal).
-- Para consultas agrupadas usar GROUP BY con sucursal, cliente, año, mes, departamento o marca según corresponda.
+- Para listados usar TOP 100 como máximo.
+- Para totales usar SUM(ValorTotal).
+- Para cantidades usar COUNT.
+- Para rankings usar GROUP BY y ORDER BY DESC.
 
-TABLAS PRINCIPALES:
+SINÓNIMOS IMPORTANTES:
+- ventas, facturas, documentos fiscales, ingresos = DocumentoFiscal.
+- total vendido = SUM(DocumentoFiscal.ValorTotal).
+- fecha de venta = DocumentoFiscal.FechaEmision.
+- clientes = Cliente unido con SocioNegocio.
+- empleados = Empleado unido con SocioNegocio.
+- proveedores = Proveedor unido con SocioNegocio.
+- teléfonos de clientes = Cliente -> SocioNegocio -> SocioNegocioTelefono.
+- vehículos, carros, autos = Automovil.
+- servicios, trabajos, órdenes = OrdeDeTrabajo.
+- sucursal más rentable = sucursal con más ventas.
+- sucursal que produce más ingresos = sucursal con más ventas.
+- mejor cliente = cliente que más gastó.
+- quién me deja más dinero = cliente que más gastó.
+- marca favorita de clientes = marca más atendida.
+- vehículo más atendido = vehículo con más órdenes.
+- materiales que debo comprar = materiales con menor Saldo.
+- producto más utilizado = Material unido con DetalleMaterial.
+
+TABLAS Y COLUMNAS:
+
+Cliente:
+- CodigoCliente
+- CodigoSocio
 
 SocioNegocio:
 - CodigoSocio
@@ -29,18 +56,6 @@ SocioNegocio:
 - RazonSocial
 - Genero
 - CodigoTipoSocioNegocio
-
-Cliente:
-- CodigoCliente
-- CodigoSocio
-
-Empleado:
-- CodigoEmpleado
-- CodigoSocio
-
-Proveedor:
-- CodigoProveedor
-- CodigoSocio
 
 SocioNegocioTelefono:
 - CodigoSocio
@@ -59,6 +74,14 @@ SocioNegocioDireccion:
 - DepartamentoCodigo
 - CodigoTipoDireccion
 - CodigoSocioNegocio
+
+Empleado:
+- CodigoEmpleado
+- CodigoSocio
+
+Proveedor:
+- CodigoProveedor
+- CodigoSocio
 
 Automovil:
 - CodigoAutomovil
@@ -95,15 +118,6 @@ OrdeDeTrabajo:
 - Estado
 - NumeroCita
 
-Diagnostico:
-- NumeroDiagnostico
-- NumeroCita
-- CodigoDiagnostico
-
-TipoDiagnostico:
-- CodigoDiagnostico
-- Descripcion
-
 DetalleManoDeObra:
 - NumeroOrden
 - NumeroManoDeObra
@@ -116,26 +130,6 @@ DetalleManoDeObra:
 - Numero
 - CodigoTipoDocumentoFiscal
 
-ManoObra:
-- CodigoManoObra
-- Descripcion
-- Precio
-
-DetalleMaterial:
-- NumeroOrden
-- NumeroManoDeObra
-- CodigoMaterial
-- NumeroDetalleMaterial
-- Unidades
-- PrecioVenta
-
-Material:
-- CodigoMaterial
-- Descripcion
-- PrecioCosto
-- PrecioVenta
-- Saldo
-
 DocumentoFiscal:
 - CodigoTipoDocumentoFiscal
 - Serie
@@ -146,28 +140,25 @@ DocumentoFiscal:
 - IVA
 - Estado
 
-DetallePago:
-- Serie
-- Numero
-- CodigoTipoDocumentoFiscal
-- NumeroPago
-- Valor
-- CodigoTipoPago
-
-TipoPago:
-- CodigoTipoPago
+Material:
+- CodigoMaterial
 - Descripcion
+- PrecioCosto
+- PrecioVenta
+- Saldo
+
+DetalleMaterial:
+- NumeroOrden
+- NumeroManoDeObra
+- CodigoMaterial
+- NumeroDetalleMaterial
+- Unidades
+- PrecioVenta
 
 Sucursal:
 - CodigoSucursal
 - NombreSucursal
 - CodigoTaller
-
-Taller:
-- CodigoTaller
-- RazonSocial
-- NombreComercial
-- NIT
 
 SucursalDireccion:
 - CodigoSucursal
@@ -190,58 +181,39 @@ Municipio:
 - CodigoMunicipio
 - Descripcion
 
-Cotizacion:
-- NumeroRequision
-- NumeroCotizacion
-- FechaCotizacion
-- CodigoProveedore
+Diagnostico:
+- NumeroDiagnostico
+- NumeroCita
+- CodigoDiagnostico
 
-Requisicion:
-- NumeroRequision
-- FechaRequisicion
-- CodigoSucursal
-- CodigoEmpleado
+TipoDiagnostico:
+- CodigoDiagnostico
+- Descripcion
 
-Pedido:
-- NumeroRequision
-- NumeroCotizacion
-- NumeroPedido
+DetallePago:
+- Serie
+- Numero
+- CodigoTipoDocumentoFiscal
+- NumeroPago
+- Valor
+- CodigoTipoPago
 
-DetallePedido:
-- NumeroPedido
-- LineaPedido
-- CodigoMaterial
-- Unidades
-- UnidadesRecibidas
-- PrecioCompra
+TipoPago:
+- CodigoTipoPago
+- Descripcion
 
-VISTAS DISPONIBLES:
+ManoObra:
+- CodigoManoObra
+- Descripcion
+- Precio
 
-vAutomovil:
-- CodigoAutomovil
-- Placa
-- Modelo
-- Marca
-- Linea
-
-vEmpleados:
-- CodigoEmpleado
-- NombreEmpleado
-
-vClientess:
-- CodigoCliente
-- NombreEmpleado
-
-vProveedor:
-- CodigoProveedor
-- nombreproveedor
-
-vProveedores:
-- CodigoProveedor
-- Nombre
+Taller:
+- CodigoTaller
+- RazonSocial
+- NombreComercial
 - NIT
 
-RELACIONES REALES IMPORTANTES:
+RELACIONES REALES:
 
 Cliente.CodigoSocio = SocioNegocio.CodigoSocio
 Empleado.CodigoSocio = SocioNegocio.CodigoSocio
@@ -266,8 +238,9 @@ Automovil.CodigoLinea = Linea.CodigoLinea
 Linea.CodigoMarca = Marca.CodigoMarca
 
 DetalleManoDeObra.NumeroOrden = OrdeDeTrabajo.NumeroOrden
-DetalleManoDeObra.CodigoManoObra = ManoObra.CodigoManoObra
 DetalleManoDeObra.CodigoEmpleado = Empleado.CodigoEmpleado
+DetalleManoDeObra.CodigoManoObra = ManoObra.CodigoManoObra
+
 DetalleManoDeObra.CodigoTipoDocumentoFiscal = DocumentoFiscal.CodigoTipoDocumentoFiscal
 DetalleManoDeObra.Serie = DocumentoFiscal.Serie
 DetalleManoDeObra.Numero = DocumentoFiscal.Numero
@@ -289,51 +262,10 @@ SucursalDireccion.CodigoSucursal = Sucursal.CodigoSucursal
 SucursalDireccion.DepartamentoCodigo = Municipio.DepartamentoCodigo
 SucursalDireccion.CodigoMunicipio = Municipio.CodigoMunicipio
 
-Cotizacion.NumeroRequision = Requisicion.NumeroRequision
-Cotizacion.CodigoProveedore = Proveedor.CodigoProveedor
-
-Pedido.NumeroRequision = Cotizacion.NumeroRequision
-Pedido.NumeroCotizacion = Cotizacion.NumeroCotizacion
-
-DetallePedido.NumeroPedido = Pedido.NumeroPedido
-DetallePedido.CodigoMaterial = Material.CodigoMaterial
-
-Requisicion.CodigoSucursal = Sucursal.CodigoSucursal
-Requisicion.CodigoEmpleado = Empleado.CodigoEmpleado
-
-SINÓNIMOS Y REGLAS DE NEGOCIO:
-
-- ventas, facturas, documentos fiscales, ingresos = DocumentoFiscal.
-- total vendido = SUM(DocumentoFiscal.ValorTotal).
-- IVA incluido = DocumentoFiscal.ValorTotal.
-- fecha de venta = DocumentoFiscal.FechaEmision.
-- clientes = Cliente unido con SocioNegocio.
-- empleados, asesores, mecánicos, trabajadores = Empleado unido con SocioNegocio.
-- proveedores = Proveedor unido con SocioNegocio.
-- teléfonos = SocioNegocioTelefono.Numero.
-- vehículos, carros, autos = Automovil.
-- placa = Automovil.Placa.
-- servicios, trabajos, órdenes = OrdeDeTrabajo.
-- sucursal = Sucursal.NombreSucursal.
-- taller = Taller.
-- productos, repuestos, materiales, insumos = Material.
-- producto más usado = Material unido con DetalleMaterial usando SUM(DetalleMaterial.Unidades).
-- mano de obra = ManoObra y DetalleManoDeObra.
-- pagos = DetallePago unido con DocumentoFiscal y TipoPago.
-- diagnósticos = Diagnostico unido con TipoDiagnostico.
-- historial de vehículo = Automovil -> Cita -> OrdeDeTrabajo.
-- ventas por sucursal = Sucursal -> Cita -> OrdeDeTrabajo -> DetalleManoDeObra -> DocumentoFiscal.
-- ventas por departamento o municipio = DocumentoFiscal -> DetalleManoDeObra -> OrdeDeTrabajo -> Cita -> Sucursal -> SucursalDireccion -> Municipio -> Departamento.
-- marca más atendida = Marca -> Linea -> Automovil -> Cita -> OrdeDeTrabajo.
-- cliente que más gastó = Cliente -> SocioNegocio -> Cita -> OrdeDeTrabajo -> DetalleManoDeObra -> DocumentoFiscal.
-- empleado con más órdenes = Empleado -> SocioNegocio -> Cita -> OrdeDeTrabajo.
-- vehículos de un cliente = Cliente -> Cita -> Automovil.
-- servicios de un vehículo = Automovil -> Cita -> OrdeDeTrabajo -> DetalleManoDeObra -> ManoObra.
-
 CONSULTAS EJEMPLO CORRECTAS:
 
 Pregunta:
-¿Cuál fue la sucursal con más ventas en 2026?
+¿Cuál es la sucursal que más vende?
 
 SQL:
 SELECT TOP 1
@@ -350,56 +282,138 @@ INNER JOIN DocumentoFiscal df
     ON dmo.CodigoTipoDocumentoFiscal = df.CodigoTipoDocumentoFiscal
     AND dmo.Serie = df.Serie
     AND dmo.Numero = df.Numero
-WHERE YEAR(df.FechaEmision) = 2026
 GROUP BY s.NombreSucursal
 ORDER BY TotalVendido DESC;
 
 Pregunta:
-¿Cuál es el total vendido?
-
-SQL:
-SELECT
-    SUM(ValorTotal) AS TotalVendido
-FROM DocumentoFiscal;
-
-Pregunta:
-Muéstrame las ventas más recientes.
+¿Quién es mi mejor cliente?
 
 SQL:
 SELECT TOP 10
-    Serie,
-    Numero,
-    CodigoTipoDocumentoFiscal,
-    FechaEmision,
-    NIT,
-    ValorTotal,
-    IVA,
-    Estado
-FROM DocumentoFiscal
-ORDER BY FechaEmision DESC;
+    c.CodigoCliente,
+    sn.PrimerNombre,
+    sn.PrimerApellido,
+    sn.NIT,
+    SUM(df.ValorTotal) AS TotalGastado
+FROM Cliente c
+INNER JOIN SocioNegocio sn
+    ON c.CodigoSocio = sn.CodigoSocio
+INNER JOIN Cita ci
+    ON c.CodigoCliente = ci.CodigoCliente
+INNER JOIN OrdeDeTrabajo ot
+    ON ci.NumeroCita = ot.NumeroCita
+INNER JOIN DetalleManoDeObra dmo
+    ON ot.NumeroOrden = dmo.NumeroOrden
+INNER JOIN DocumentoFiscal df
+    ON dmo.CodigoTipoDocumentoFiscal = df.CodigoTipoDocumentoFiscal
+    AND dmo.Serie = df.Serie
+    AND dmo.Numero = df.Numero
+GROUP BY
+    c.CodigoCliente,
+    sn.PrimerNombre,
+    sn.PrimerApellido,
+    sn.NIT
+ORDER BY TotalGastado DESC;
 
 Pregunta:
-¿Cuál fue la marca de vehículo más atendida?
+¿Qué marca se atiende más?
 
 SQL:
-SELECT TOP 1
+SELECT TOP 100
     m.Descripcion AS Marca,
-    COUNT(ot.NumeroOrden) AS TotalServicios
+    COUNT(ot.NumeroOrden) AS TotalOrdenes
 FROM Marca m
-INNER JOIN Linea l
-    ON m.CodigoMarca = l.CodigoMarca
 INNER JOIN Automovil a
-    ON l.CodigoMarca = a.CodigoMarca
-    AND l.CodigoLinea = a.CodigoLinea
+    ON m.CodigoMarca = a.CodigoMarca
 INNER JOIN Cita c
     ON a.CodigoAutomovil = c.CodigoAutomovil
 INNER JOIN OrdeDeTrabajo ot
     ON c.NumeroCita = ot.NumeroCita
 GROUP BY m.Descripcion
-ORDER BY TotalServicios DESC;
+ORDER BY TotalOrdenes DESC;
 
 Pregunta:
-¿Cuál fue el producto más utilizado?
+¿Cuál es el vehículo más atendido?
+
+SQL:
+SELECT TOP 1
+    a.Placa,
+    ma.Descripcion AS Marca,
+    l.Descripcion AS Linea,
+    a.Modelo,
+    COUNT(ot.NumeroOrden) AS TotalOrdenes
+FROM Automovil a
+INNER JOIN Linea l
+    ON a.CodigoMarca = l.CodigoMarca
+    AND a.CodigoLinea = l.CodigoLinea
+INNER JOIN Marca ma
+    ON l.CodigoMarca = ma.CodigoMarca
+INNER JOIN Cita c
+    ON a.CodigoAutomovil = c.CodigoAutomovil
+INNER JOIN OrdeDeTrabajo ot
+    ON c.NumeroCita = ot.NumeroCita
+GROUP BY
+    a.Placa,
+    ma.Descripcion,
+    l.Descripcion,
+    a.Modelo
+ORDER BY TotalOrdenes DESC;
+
+Pregunta:
+¿Qué departamento tiene más clientes?
+
+SQL:
+SELECT TOP 100
+    d.Descripcion AS Departamento,
+    COUNT(DISTINCT c.CodigoCliente) AS TotalClientes
+FROM Cliente c
+INNER JOIN SocioNegocioDireccion sd
+    ON c.CodigoSocio = sd.CodigoSocioNegocio
+INNER JOIN Municipio m
+    ON sd.DepartamentoCodigo = m.DepartamentoCodigo
+    AND sd.CodigoMunicipio = m.CodigoMunicipio
+INNER JOIN Departamento d
+    ON m.DepartamentoCodigo = d.CodigoDepartamento
+GROUP BY d.Descripcion
+ORDER BY TotalClientes DESC;
+
+Pregunta:
+Quiero ver los números de teléfono de los clientes.
+
+SQL:
+SELECT TOP 100
+    c.CodigoCliente,
+    sn.PrimerNombre,
+    sn.PrimerApellido,
+    sn.NIT,
+    st.Numero AS Telefono
+FROM Cliente c
+INNER JOIN SocioNegocio sn
+    ON c.CodigoSocio = sn.CodigoSocio
+INNER JOIN SocioNegocioTelefono st
+    ON sn.CodigoSocio = st.CodigoSocio;
+
+Pregunta:
+¿Qué materiales debo comprar esta semana?
+
+SQL:
+SELECT TOP 100
+    Descripcion,
+    Saldo AS Stock
+FROM Material
+ORDER BY Saldo ASC;
+
+Pregunta:
+¿Cuánto vendimos este año?
+
+SQL:
+SELECT
+    SUM(ValorTotal) AS TotalVendido
+FROM DocumentoFiscal
+WHERE YEAR(FechaEmision) = YEAR(GETDATE());
+
+Pregunta:
+¿Cuál es el producto más utilizado?
 
 SQL:
 SELECT TOP 1
@@ -412,74 +426,20 @@ GROUP BY m.Descripcion
 ORDER BY UnidadesUtilizadas DESC;
 
 Pregunta:
-Muéstrame el historial del vehículo con placa P123ABC.
+Ventas por mes en 2025.
 
 SQL:
-SELECT TOP 100
-    a.Placa,
-    c.NumeroCita,
-    c.FechaCita,
-    ot.NumeroOrden,
-    ot.FechaOrden,
-    ot.Estado
-FROM Automovil a
-INNER JOIN Cita c
-    ON a.CodigoAutomovil = c.CodigoAutomovil
-INNER JOIN OrdeDeTrabajo ot
-    ON c.NumeroCita = ot.NumeroCita
-WHERE a.Placa = 'P123ABC'
-ORDER BY ot.FechaOrden DESC;
+SELECT
+    YEAR(df.FechaEmision) AS Anio,
+    MONTH(df.FechaEmision) AS Mes,
+    SUM(df.ValorTotal) AS TotalVendido
+FROM DocumentoFiscal df
+WHERE YEAR(df.FechaEmision) = 2025
+GROUP BY YEAR(df.FechaEmision), MONTH(df.FechaEmision)
+ORDER BY Anio, Mes;
 
-Pregunta:
-Muéstrame los pagos realizados.
-
-SQL:
-SELECT TOP 100
-    df.Serie,
-    df.Numero,
-    df.FechaEmision,
-    df.NIT,
-    df.ValorTotal,
-    dp.NumeroPago,
-    dp.Valor AS ValorPago,
-    tp.Descripcion AS TipoPago
-FROM DetallePago dp
-INNER JOIN DocumentoFiscal df
-    ON dp.CodigoTipoDocumentoFiscal = df.CodigoTipoDocumentoFiscal
-    AND dp.Serie = df.Serie
-    AND dp.Numero = df.Numero
-INNER JOIN TipoPago tp
-    ON dp.CodigoTipoPago = tp.CodigoTipoPago;
-
-Pregunta:
-Muéstrame los diagnósticos.
-
-SQL:
-SELECT TOP 100
-    d.NumeroDiagnostico,
-    d.NumeroCita,
-    td.Descripcion AS Diagnostico
-FROM Diagnostico d
-INNER JOIN TipoDiagnostico td
-    ON d.CodigoDiagnostico = td.CodigoDiagnostico;
-
-FORMAS COMUNES DE PEDIR DATOS:
-
-- "quiero ver la tabla clientes" = Cliente unido con SocioNegocio.
-- "muéstrame clientes" = Cliente unido con SocioNegocio.
-- "ver empleados" = Empleado unido con SocioNegocio.
-- "muéstrame proveedores" = Proveedor unido con SocioNegocio.
-- "quiero ver vehículos" = Automovil o vAutomovil.
-- "muéstrame carros" = Automovil o vAutomovil.
-- "quiero ver ventas" = DocumentoFiscal.
-- "quiero ver productos" = Material.
-- "quiero ver pagos" = DetallePago unido con DocumentoFiscal y TipoPago.
-- "quiero ver diagnósticos" = Diagnostico unido con TipoDiagnostico.
-
-PREGUNTAS MAL ESCRITAS:
-
-- Si el usuario escribe "quiero ver la los nombres de los clientes", interpretar como "quiero ver los nombres de los clientes".
-- Si escribe "nit de 10 clientes", interpretar como "dame 10 NIT de clientes".
-- Si escribe "telefonos cliente nit CF-1", interpretar como "muestra el teléfono del cliente con NIT CF-1".
-- Si escribe "ordenes", interpretar como OrdeDeTrabajo.
+IMPORTANTE:
+Si la pregunta pide crear, borrar, modificar, actualizar, eliminar o insertar datos:
+Responder exactamente:
+NO_SQL
 """

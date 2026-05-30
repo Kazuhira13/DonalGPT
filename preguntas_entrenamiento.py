@@ -39,6 +39,11 @@ INTENCIONES = {
     ],
 
     "top_clientes_gasto": [
+        "que cliente ha gastado mas dinero",
+        "cual cliente ha gastado mas dinero",
+        "quien me deja mas dinero",
+        "cliente mas rentable",
+        "cual es el cliente mas rentable",
         "clientes que mas gastaron",
         "clientes que mas han gastado",
         "clientes con mayor gasto",
@@ -52,15 +57,7 @@ INTENCIONES = {
         "clientes mas rentables",
         "mejores clientes",
         "cliente que mas gasto",
-        "cliente con mayor compra",
-        "quien es mi mejor cliente",
-        "cual es mi mejor cliente",
-        "mejor cliente",
-        "cliente mas importante",
-        "clientes mas importantes",
-        "clientes que dejan mas dinero",
-        "clientes que mas facturan",
-        "quienes son mis mejores clientes"
+        "cliente con mayor compra"
     ],
 
     "top_marcas_atendidas": [
@@ -73,15 +70,7 @@ INTENCIONES = {
         "marca mas frecuente",
         "marca con mas ingresos al taller",
         "marca que mas llega al taller",
-        "top marcas atendidas",
-        "que marca se atiende mas",
-        "que marca atienden mas",
-        "marca que mas atienden",
-        "marca que mas llega",
-        "marca que entra mas al taller",
-        "que marca entra mas al taller",
-        "marca mas trabajada",
-        "marca mas frecuente en el taller"
+        "top marcas atendidas"
     ],
 
     "producto_mas_utilizado": [
@@ -113,30 +102,18 @@ INTENCIONES = {
         "ranking de empleados por ordenes"
     ],
 
-"top_sucursal": [
-    "sucursal que mas vendio",
-    "sucursal con mas ventas",
-    "sucursal con mayor venta",
-    "sucursal que genera mas ingresos",
-    "mejor sucursal",
-    "top sucursal",
-    "cual es la sucursal que mas vende",
-    "que sucursal vende mas",
-    "cual sucursal vende mas",
-    "la sucursal que mas vende",
-    "sucursal mas vendedora",
-    "sucursal con mayores ingresos",
-    "sucursal con mas ingresos",
-    "sucursal que mas factura",
-    "sucursal con mayor facturacion",
-    "cual es la sucursal mas rentable",
-    "sucursal mas rentable",
-    "que sucursal es mas rentable",
-    "sucursal que genera mas dinero",
-    "sucursal que deja mas dinero",
-    "sucursal con mas facturacion",
-    "sucursal con mas ingresos"
-],
+    "top_sucursal": [
+        "que sucursal genera mas ventas",
+        "cual sucursal genera mas ventas",
+        "que sucursal produce mas ingresos",
+        "cual es la sucursal que mas vende",
+        "sucursal que mas vendio",
+        "sucursal con mas ventas",
+        "sucursal con mayor venta",
+        "sucursal que genera mas ingresos",
+        "mejor sucursal",
+        "top sucursal"
+    ],
 
     "ventas_por_anio": [
         "ventas del año",
@@ -151,6 +128,15 @@ INTENCIONES = {
         "ventas del 2025",
         "ventas del 2026"
     ],
+
+    "ventas_anio_actual": [
+    "cuanto vendimos este año",
+    "cuanto se vendio este año",
+    "ventas este año",
+    "ventas del año actual",
+    "cuanto dinero generamos este año"
+],
+
 
     "ventas_totales": [
         "ventas totales",
@@ -352,17 +338,7 @@ INTENCIONES = {
     "stock bajo",
     "bajo stock",
     "menor stock",
-    "poco inventario",
-    "que material deberia comprar pronto",
-    "que materiales deberia comprar pronto",
-    "que productos debo comprar pronto",
-    "que repuestos debo comprar",
-    "materiales que debo reabastecer",
-    "productos que debo reabastecer",
-    "materiales criticos",
-    "productos criticos",
-    "existencias bajas",
-    "productos por agotarse"
+    "poco inventario"
 ],
 
 "total_ordenes": [
@@ -396,15 +372,7 @@ INTENCIONES = {
     "cuanto se vendio por mes",
     "facturacion por mes",
     "ingresos por mes",
-    "ventas agrupadas por mes",
-    "como estuvieron las ventas durante",
-    "como estuvieron las ventas en",
-    "como fueron las ventas durante",
-    "como fueron las ventas en",
-    "comportamiento de ventas en",
-    "ventas mes a mes en",
-    "ventas durante el año",
-    "resumen mensual de ventas"
+    "ventas agrupadas por mes"
 ],
 
 "ventas_por_sucursal": [
@@ -421,6 +389,87 @@ INTENCIONES = {
     "cantidad de facturas",
     "cantidad de documentos fiscales",
     "numero de facturas"
+]
+
+,
+
+    "proveedor_mas_cotizaciones": [
+        "proveedor con mas cotizaciones",
+        "proveedor que tiene mas cotizaciones",
+        "proveedor que mas cotiza",
+        "mayor numero de cotizaciones por proveedor",
+        "cual es el proveedor con mas cotizaciones",
+        "que proveedor tiene mas cotizaciones",
+        "quien tiene mas cotizaciones",
+        "proveedores con mayor cantidad de cotizaciones"
+    ],
+
+    "proveedor_mas_pedidos": [
+        "proveedor recibe mas pedidos",
+        "proveedor con mas pedidos",
+        "proveedor que recibe mas pedidos",
+        "proveedor con mayor numero de pedidos",
+        "que proveedor recibe mas pedidos",
+        "cual proveedor tiene mas pedidos",
+        "proveedores con mas pedidos"
+    ],
+
+    "departamento_mas_ventas": [
+        "departamento con mas ventas",
+        "departamento que mas vende",
+        "departamento con mayores ventas",
+        "departamento que genera mas ingresos",
+        "cual es el departamento con mas ventas",
+        "ventas por departamento",
+        "ingresos por departamento",
+        "facturacion por departamento"
+    ],
+
+    "material_mas_comprado": [
+        "material se compra mas",
+        "material mas comprado",
+        "producto mas comprado",
+        "repuesto mas comprado",
+        "material que mas se compra",
+        "que material se compra mas",
+        "cual material se compra mas",
+        "material con mas compras"
+    ],
+
+    "cotizacion_mas_alta": [
+        "cotizacion mas alta",
+        "cotizacion mayor",
+        "cotizacion con mayor monto",
+        "cual es la cotizacion mas alta",
+        "cotizacion mas cara",
+        "mayor cotizacion"
+    ],
+
+    "mano_obra_mas_cara": [
+        "mano de obra mas cara",
+        "servicio mas caro",
+        "trabajo mas caro",
+        "cual es la mano de obra mas cara",
+        "cual es el servicio mas caro",
+        "diagnostico mas costoso",
+        "cual es el diagnostico mas costoso"
+    ],
+
+    "clientes_telefonos": [
+    "quiero ver los numeros de telefono de los clientes",
+    "telefonos de clientes",
+    "numero de telefono de los clientes",
+    "muestrame los telefonos de clientes",
+    "clientes con telefono"
+],
+
+"materiales_bajo_stock": [
+    "materiales por agotarse",
+    "que materiales estan por agotarse",
+    "que materiales debo comprar esta semana",
+    "materiales con menos stock",
+    "materiales bajo stock",
+    "productos por agotarse"
 ]
 
 }

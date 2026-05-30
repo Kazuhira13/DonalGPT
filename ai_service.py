@@ -12,7 +12,7 @@ MODEL = "qwen2.5-coder:7b"
 def obtener_cantidad(pregunta, defecto=100):
     match = re.search(r"\b(\d+)\b", pregunta)
     if match:
-        return int(match.group(1))
+        return min(int(match.group(1)), 100)
     return defecto
 
 
@@ -69,6 +69,119 @@ def generar_sql(pregunta):
     intencion = detectar_intencion(pregunta)
     cantidad = obtener_cantidad(pregunta)
     anio = obtener_anio(pregunta)
+
+    if intencion == "proveedor_mas_cotizaciones":
+        return f"""
+SELECT TOP {cantidad}
+    p.CodigoProveedor,
+    sn.NIT,
+    sn.RazonSocial,
+    COUNT(c.NumeroCotizacion) AS TotalCotizaciones
+FROM Proveedor p
+INNER JOIN SocioNegocio sn
+    ON p.CodigoSocio = sn.CodigoSocio
+INNER JOIN Cotizacion c
+    ON p.CodigoProveedor = c.CodigoProveedore
+GROUP BY
+    p.CodigoProveedor,
+    sn.NIT,
+    sn.RazonSocial
+ORDER BY TotalCotizaciones DESC;
+"""
+
+    if intencion == "proveedor_mas_pedidos":
+        return f"""
+SELECT TOP {cantidad}
+    p.CodigoProveedor,
+    sn.NIT,
+    sn.RazonSocial,
+    COUNT(pe.NumeroPedido) AS TotalPedidos
+FROM Proveedor p
+INNER JOIN SocioNegocio sn
+    ON p.CodigoSocio = sn.CodigoSocio
+INNER JOIN Cotizacion c
+    ON p.CodigoProveedor = c.CodigoProveedore
+INNER JOIN Pedido pe
+    ON c.NumeroRequision = pe.NumeroRequision
+    AND c.NumeroCotizacion = pe.NumeroCotizacion
+GROUP BY
+    p.CodigoProveedor,
+    sn.NIT,
+    sn.RazonSocial
+ORDER BY TotalPedidos DESC;
+"""
+
+    if intencion == "departamento_mas_ventas":
+        return f"""
+SELECT TOP {cantidad}
+    d.Descripcion AS Departamento,
+    SUM(df.ValorTotal) AS TotalVendido
+FROM DocumentoFiscal df
+INNER JOIN DetalleManoDeObra dmo
+    ON dmo.CodigoTipoDocumentoFiscal = df.CodigoTipoDocumentoFiscal
+    AND dmo.Serie = df.Serie
+    AND dmo.Numero = df.Numero
+INNER JOIN OrdeDeTrabajo ot
+    ON dmo.NumeroOrden = ot.NumeroOrden
+INNER JOIN Cita c
+    ON ot.NumeroCita = c.NumeroCita
+INNER JOIN Sucursal s
+    ON c.CodigoSucursal = s.CodigoSucursal
+INNER JOIN SucursalDireccion sd
+    ON s.CodigoSucursal = sd.CodigoSucursal
+INNER JOIN Municipio m
+    ON sd.DepartamentoCodigo = m.DepartamentoCodigo
+    AND sd.CodigoMunicipio = m.CodigoMunicipio
+INNER JOIN Departamento d
+    ON m.DepartamentoCodigo = d.CodigoDepartamento
+GROUP BY d.Descripcion
+ORDER BY TotalVendido DESC;
+"""
+
+    if intencion == "material_mas_comprado":
+        return f"""
+SELECT TOP {cantidad}
+    m.CodigoMaterial,
+    m.Descripcion AS Material,
+    SUM(dp.Unidades) AS TotalUnidadesSolicitadas,
+    SUM(dp.UnidadesRecibidas) AS TotalUnidadesRecibidas,
+    SUM(dp.Unidades * dp.PrecioCompra) AS TotalComprado
+FROM DetallePedido dp
+INNER JOIN Material m
+    ON dp.CodigoMaterial = m.CodigoMaterial
+GROUP BY
+    m.CodigoMaterial,
+    m.Descripcion
+ORDER BY TotalUnidadesSolicitadas DESC;
+"""
+
+    if intencion == "cotizacion_mas_alta":
+        return f"""
+SELECT TOP {cantidad}
+    c.NumeroRequision,
+    c.NumeroCotizacion,
+    c.FechaCotizacion,
+    c.CodigoProveedore,
+    sn.RazonSocial,
+    SUM(dp.Unidades * dp.PrecioCompra) AS TotalCotizacion
+FROM Cotizacion c
+INNER JOIN Proveedor p
+    ON c.CodigoProveedore = p.CodigoProveedor
+INNER JOIN SocioNegocio sn
+    ON p.CodigoSocio = sn.CodigoSocio
+INNER JOIN Pedido pe
+    ON c.NumeroRequision = pe.NumeroRequision
+    AND c.NumeroCotizacion = pe.NumeroCotizacion
+INNER JOIN DetallePedido dp
+    ON pe.NumeroPedido = dp.NumeroPedido
+GROUP BY
+    c.NumeroRequision,
+    c.NumeroCotizacion,
+    c.FechaCotizacion,
+    c.CodigoProveedore,
+    sn.RazonSocial
+ORDER BY TotalCotizacion DESC;
+"""
 
     if intencion == "total_ordenes":
         return """
@@ -378,6 +491,41 @@ INNER JOIN Material m
     ON dp.CodigoMaterial = m.CodigoMaterial;
 """
 
+    if intencion == "tipo_pago_mas_usado":
+        return """
+SELECT
+    tp.Descripcion AS TipoPago,
+    COUNT(*) AS TotalUsos,
+    SUM(dp.Valor) AS TotalPagado
+FROM DetallePago dp
+INNER JOIN TipoPago tp
+    ON dp.CodigoTipoPago = tp.CodigoTipoPago
+GROUP BY tp.Descripcion
+ORDER BY TotalUsos DESC;
+"""
+
+    if intencion == "diagnostico_mas_frecuente":
+        return """
+SELECT
+    td.Descripcion AS Diagnostico,
+    COUNT(*) AS TotalVeces
+FROM Diagnostico d
+INNER JOIN TipoDiagnostico td
+    ON d.CodigoDiagnostico = td.CodigoDiagnostico
+GROUP BY td.Descripcion
+ORDER BY TotalVeces DESC;
+"""
+
+    if intencion == "mano_obra_mas_cara":
+        return """
+SELECT TOP 1
+    CodigoManoObra,
+    Descripcion,
+    Precio
+FROM ManoObra
+ORDER BY Precio DESC;
+"""
+
     if intencion == "pagos":
         return f"""
 SELECT TOP {cantidad}
@@ -509,6 +657,35 @@ SELECT TOP {cantidad}
     CodigoSocioNegocio
 FROM SocioNegocioDireccion;
 """
+    if intencion == "ventas_anio_actual":
+        return """
+SELECT
+    SUM(ValorTotal) AS TotalVendido
+FROM DocumentoFiscal
+WHERE YEAR(FechaEmision) = YEAR(GETDATE());
+"""
+
+    if intencion == "clientes_telefonos":
+        return f"""
+SELECT TOP {cantidad}
+    c.CodigoCliente,
+    sn.PrimerNombre,
+    sn.PrimerApellido,
+    sn.NIT,
+    st.Numero AS Telefono
+FROM Cliente c
+INNER JOIN SocioNegocio sn
+    ON c.CodigoSocio = sn.CodigoSocio
+INNER JOIN SocioNegocioTelefono st
+    ON sn.CodigoSocio = st.CodigoSocio;
+"""
+    
+    if intencion == "direcciones_clientes":
+        return f"""
+...
+FROM SocioNegocioDireccion;
+"""
+    
 
     prompt = f"""
 Eres DonaldGPT, un generador seguro de consultas SQL Server para DonaldV2.
